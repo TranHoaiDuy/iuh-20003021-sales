@@ -6,12 +6,12 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import dash
 
-cred = credentials.Certificate('./ltptdl1-84d13-firebase-adminsdk-qu8hk-7c1215c90f.json')
+cred = credentials.Certificate('./iuh-20079191-firebase-adminsdk-44xct-7031340b3a.json')
 appLoadData = firebase_admin.initialize_app(cred)
 
 dbFireStore = firestore.client()
 
-queryResults = list(dbFireStore.collection(u'tbl0000').stream())
+queryResults = list(dbFireStore.collection(u'tbl20079191').stream())
 listQueryResult = list(map(lambda x: x.to_dict(), queryResults))
 
 df = pd.DataFrame(listQueryResult)
@@ -32,17 +32,15 @@ DoanhSo = df.groupby(['PRODUCTCODE']).sum(numeric_only=True)
 topDoanhSo = DoanhSo['SALES'].max()
 answertopDoanhSo = str(round(topDoanhSo, 2))
 
-sl = df.groupby(['PRODUCTCODE']).sum(numeric_only=True)
-sluong = sl['QUANTITYORDERED'].max()
-a = df[df['PRODUCTCODE']=='S18_3232']
-dg = a['PRICEEACH'].max()
-topLoiNhuan = topDoanhSo - (sluong*dg)
+df["PROFIT"]=df['SALES']-df["QUANTITYORDERED"]*df["PRICEEACH"]
+ln = df.groupby(['PRODUCTCODE']).sum('PROFIT')
+topLoiNhuan = ln['PROFIT'].max()
 
 answertopLoiNhuan = str(round(topLoiNhuan, 2))
 
 
 df["YEAR_ID"] = df["YEAR_ID"].astype("str")
-h1 = px.bar(df, x="YEAR_ID", y="SALES", title='Doanh số bán hàng theo năm',
+h1 = px.histogram(df, x="YEAR_ID", y="SALES", title='Doanh số bán hàng theo năm',
 labels={'YEAR_ID': 'Năm','SALES':'Doanh Số'})
 
 
@@ -72,6 +70,7 @@ color='PROFIT',
 labels={'parent':'Năm', 'labels':'Danh Mục','PROFIT':'Lợi Nhuận'},
 title='Tỉ lệ lợi nhuận theo từng danh mục trong từng năm')
 
+sp = df.groupby(['PRODUCTCODE']).sum('SALES').sort_values(by="SALES", ascending=False).reset_index().head(1)['PRODUCTCODE'][0]
 
 app.layout = html.Div(
     children=[
@@ -107,7 +106,7 @@ app.layout = html.Div(
                 children=html.Div(
                     children=[
                         html.P("TOP DOANH SỐ",className="title"),
-                        html.P(answertopDoanhSo)
+                        html.P(sp+','+answertopDoanhSo)
                     ],
                     className="label"
                     ),className="card"
@@ -116,7 +115,7 @@ app.layout = html.Div(
                 children=html.Div(
                     children=[
                         html.P("TOP LỢI NHUẬN",className="title"),
-                        html.P(answertopLoiNhuan)
+                        html.P(sp+','+answertopLoiNhuan)
                     ],
                     className="label"
                     ),className="card"
