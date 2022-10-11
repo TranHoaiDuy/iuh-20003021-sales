@@ -5,7 +5,7 @@ anyio==3.6.1
 Brotli==1.0.9
 CacheControl==0.12.11
 cachetools==5.2.0
-certifi @ file:///C:\Users\TuanPC\anaconda3\envs\DashBoard\Lib\site-packages\certifi
+certifi==2022.9.24
 charset-normalizer==2.1.1
 chart-studio==1.1.0
 click==8.1.3
