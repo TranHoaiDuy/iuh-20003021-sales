@@ -62,13 +62,13 @@ title='Lợi nhuận bán hàng theo năm')
 h3=px.sunburst(df, path=['YEAR_ID', 'CATEGORY'], values='SALES',
 color='SALES',
 labels={'parent':'Năm', 'labels':'Danh Mục','SALES':'Doanh Số'},
-title='Tỉ lệ doanh số theo từng danh mục trong từng năm')
+title='Tỉ lệ doanh số theo danh mục trong từng năm')
 
 df["PROFIT"]=df['SALES']-df["QUANTITYORDERED"]*df["PRICEEACH"]
 h4=px.sunburst(df, path=['YEAR_ID', 'CATEGORY'], values='PROFIT',
 color='PROFIT',
 labels={'parent':'Năm', 'labels':'Danh Mục','PROFIT':'Lợi Nhuận'},
-title='Tỉ lệ lợi nhuận theo từng danh mục trong từng năm')
+title='Tỉ lệ lợi nhuận theo danh mục trong từng năm')
 
 sp = df.groupby(['PRODUCTCODE']).sum('SALES').sort_values(by="SALES", ascending=False).reset_index().head(1)['PRODUCTCODE'][0]
 
@@ -106,7 +106,7 @@ app.layout = html.Div(
                 children=html.Div(
                     children=[
                         html.P("TOP DOANH SỐ",className="title"),
-                        html.P(sp+','+answertopDoanhSo)
+                        html.P(sp+', '+answertopDoanhSo)
                     ],
                     className="label"
                     ),className="card"
@@ -115,7 +115,7 @@ app.layout = html.Div(
                 children=html.Div(
                     children=[
                         html.P("TOP LỢI NHUẬN",className="title"),
-                        html.P(sp+','+answertopLoiNhuan)
+                        html.P(sp+', '+answertopLoiNhuan)
                     ],
                     className="label"
                     ),className="card"
