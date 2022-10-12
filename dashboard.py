@@ -6,12 +6,12 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import dash
 
-cred = credentials.Certificate('./iuh-20009931-nguyenhoangthai-firebase-adminsdk-ucgmk-91c6254c8e.json')
+cred = credentials.Certificate('./iuh-20079191-firebase-adminsdk-44xct-7031340b3a.json')
 appLoadData = firebase_admin.initialize_app(cred)
 
 dbFireStore = firestore.client()
 
-queryResults = list(dbFireStore.collection(u'tbl20009931').stream())
+queryResults = list(dbFireStore.collection(u'tbl20079191').stream())
 listQueryResult = list(map(lambda x: x.to_dict(), queryResults))
 
 df = pd.DataFrame(listQueryResult)
@@ -76,9 +76,9 @@ app.layout = html.Div(
     children=[
         html.Div(
             children=[
-                html.H4(
+                html.H3(
                     "Xây Dựng Danh Mục Sản Phẩm Tiềm Năng", className="header-title"
-                )
+                ),html.P('IUH_DHKTPM16A_20079191_Đỗ Quốc Tuấn',className='info')
             ],
             className="header",
         ),

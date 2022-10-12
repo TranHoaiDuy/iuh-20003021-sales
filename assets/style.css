@@ -2,6 +2,10 @@ body{
     margin: 0;
     font-family: "Lato", sans-serif;
 }
+.info{
+    color: #fff;
+    padding-bottom: 16px;
+}
 .header{
     margin: 0;
     background-color: rgb(64, 135, 241);
@@ -11,12 +15,6 @@ body{
     padding: 10px;
     color: #fff;
     margin-top: 0;
-}
-.label{
-    box-shadow: 1px 4px 6px 2px rgba(0, 0, 0, 0.18);
-    width: 250px;
-    height: 100px;
-    margin: 2px;
 }
 .label p{
     margin-left: 10%;
@@ -34,6 +32,12 @@ body{
     max-width: 1024px;
     padding-right: 10px;
     padding-left: 10px;
+}
+.label{
+    box-shadow: 1px 4px 6px 2px rgba(0, 0, 0, 0.18);
+    width: 250px;
+    height: 100px;
+    margin: 2px;
 }
 .hist{
     box-shadow: 1px 4px 6px 2px rgba(0, 0, 0, 0.18);
