@@ -10,6 +10,7 @@ body{
     margin: 0;
     background-color: rgb(64, 135, 241);
     text-align: center;
+    width: 100%;
 }
 .header-title{
     padding: 10px;
