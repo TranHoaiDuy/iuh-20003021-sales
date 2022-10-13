@@ -64,6 +64,12 @@ body{
         height: 520px;
         margin: 2px;
     }
+    .header{
+        margin: 0;
+        background-color: rgb(64, 135, 241);
+        text-align: center;
+        width: 100%;
+    }
 }
 /* Mobile */
 @media (max-width:46.1875em){
@@ -78,5 +84,11 @@ body{
         width: 460px;
         height: 300px;
         margin: 2px;
+    }
+    .header{
+        margin: 0;
+        background-color: rgb(64, 135, 241);
+        text-align: center;
+        width: 100%;
     }
 }
