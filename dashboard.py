@@ -91,7 +91,7 @@ app.layout = html.Div(
                         html.P(answerdoanhSo)
                     ],
                     className="label"
-                    ),className="card"
+                    ),className="card c1"
                 ),
                 html.Div(
                 children=html.Div(
@@ -100,7 +100,7 @@ app.layout = html.Div(
                         html.P(answerLoiNhuan)
                     ],
                     className="label"
-                    ),className="card"
+                    ),className="card c1"
                 ),
                 html.Div(
                 children=html.Div(
@@ -109,7 +109,7 @@ app.layout = html.Div(
                         html.P(sp+', '+answertopDoanhSo)
                     ],
                     className="label"
-                    ),className="card"
+                    ),className="card c1"
                 ),
                 html.Div(
                 children=html.Div(
@@ -118,31 +118,31 @@ app.layout = html.Div(
                         html.P(sp+', '+answertopLoiNhuan)
                     ],
                     className="label"
-                    ),className="card"
+                    ),className="card c1"
                 ),
                 html.Div(
                 children=dcc.Graph(
                     figure=h1,
                     className="hist"
-                    ),className="card"
+                    ),className="card c2"
                 ),
                 html.Div(
                 children=dcc.Graph(
                     figure=h3,
                     className="hist"
-                    ),className="card"
+                    ),className="card c2"
                 ),
                 html.Div(
                 children=dcc.Graph(
                     figure=h2,
                     className="hist"
-                    ),className="card"
+                    ),className="card c2"
                 ),
                 html.Div(
                 children=dcc.Graph(
                     figure=h4,
                     className="hist"
-                    ),className="card"
+                    ),className="card c2"
                 )
             ],className="wrapper"
         )
