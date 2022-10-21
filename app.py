@@ -13,7 +13,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # TẢI DỮ LIỆU TỪ FIRESTORE
-cred = credentials.Certificate("./iuh-20003021-firebase-adminsdk-zio7s-b0ffdf948f.json")
+cred = credentials.Certificate("./iuh-20003021-firebase-adminsdk-zio7s-9302050963.json")
 appLoadData = firebase_admin.initialize_app(cred)
 
 dbFireStore = firestore.client()
