@@ -1,26 +1,33 @@
-from http import server
+# Học thêm tại: https://dash.plotly.com/
+
+# Run this app with `python app.py` and
+
+# visit http://127.0.0.1:8050/ in your web browser.
+
+# BẤM CTRL '+' C ĐỂ TẮT APP ĐANG CHẠY
+
 from dash import Dash, html, dcc
 import plotly.express as px
 import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, firestore
-import dash
 
-cred = credentials.Certificate('./iuh-20079191-firebase-adminsdk-44xct-7031340b3a.json')
+# TẢI DỮ LIỆU TỪ FIRESTORE
+cred = credentials.Certificate("./iuh-20003021-firebase-adminsdk-zio7s-b0ffdf948f.json")
 appLoadData = firebase_admin.initialize_app(cred)
 
 dbFireStore = firestore.client()
 
-queryResults = list(dbFireStore.collection(u'tbl20079191').stream())
+queryResults = list(dbFireStore.collection(u'tbl-20003021').where(u'DEALSIZE', u'==', 'Large').stream())
 listQueryResult = list(map(lambda x: x.to_dict(), queryResults))
 
 df = pd.DataFrame(listQueryResult)
 
+# TRỰC QUAN HÓA DỮ LIỆU WEB APP
 app = Dash(__name__)
 server = app.server
 
 app.title = "Xây Dựng Danh Mục Sản Phẩm Tiềm Năng"
-
 
 doanhSo = sum(df['SALES'])
 answerdoanhSo = str(round(doanhSo, 2))
@@ -28,16 +35,15 @@ answerdoanhSo = str(round(doanhSo, 2))
 loiNhuan = sum(df['SALES']) - sum(df['QUANTITYORDERED']*df['PRICEEACH'])
 answerLoiNhuan = str(round(loiNhuan, 2))
 
-DoanhSo = df.groupby(['PRODUCTCODE']).sum(numeric_only=True)
+DoanhSo = df.groupby(['CATEGORY']).sum(numeric_only=True)
 topDoanhSo = DoanhSo['SALES'].max()
 answertopDoanhSo = str(round(topDoanhSo, 2))
 
 df["PROFIT"]=df['SALES']-df["QUANTITYORDERED"]*df["PRICEEACH"]
-ln = df.groupby(['PRODUCTCODE']).sum('PROFIT')
+ln = df.groupby(['CATEGORY']).sum('PROFIT')
 topLoiNhuan = ln['PROFIT'].max()
 
 answertopLoiNhuan = str(round(topLoiNhuan, 2))
-
 
 df["YEAR_ID"] = df["YEAR_ID"].astype("str")
 h1 = px.histogram(df, x="YEAR_ID", y="SALES", title='Doanh số bán hàng theo năm',
@@ -70,7 +76,7 @@ color='PROFIT',
 labels={'parent':'Năm', 'labels':'Danh Mục','PROFIT':'Lợi Nhuận'},
 title='Tỉ lệ lợi nhuận theo danh mục trong từng năm')
 
-sp = df.groupby(['PRODUCTCODE']).sum('SALES').sort_values(by="SALES", ascending=False).reset_index().head(1)['PRODUCTCODE'][0]
+sp = df.groupby(['CATEGORY']).sum('SALES').sort_values(by="SALES", ascending=False).reset_index().head(1)['CATEGORY'][0]
 
 app.layout = html.Div(
     children=[
@@ -78,7 +84,7 @@ app.layout = html.Div(
             children=[
                 html.H3(
                     "Xây Dựng Danh Mục Sản Phẩm Tiềm Năng", className="header-title"
-                ),html.P('IUH_DHKTPM16A_20079191_Đỗ Quốc Tuấn',className='info')
+                ),html.P('IUH_DHHTTT16C_20003021_Trần Hoài Duy',className='info')
             ],
             className="header",
         ),
@@ -150,3 +156,4 @@ app.layout = html.Div(
 
 if __name__ == '__main__':
     app.run_server(debug=True, port=8090)
+            
