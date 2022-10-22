@@ -7,18 +7,18 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # TẢI DỮ LIỆU TỪ FIRESTORE
-'''
+
 if not firebase_admin._apps:
-    cred = credentials.Certificate("./iuh-20116031-firebase-adminsdk-f8rup-e272ed7d74.json")
+    cred = credentials.Certificate("./iuh-20003021-firebase-adminsdk-zio7s-9302050963.json")
     app = firebase_admin.initialize_app(cred)
 dbFIrestore = firestore.client()
 
-QueryResult = list(dbFIrestore.collection("tbl-20116031").stream())
+QueryResult = list(dbFIrestore.collection("tbl-20003021").stream())
 listQurey = list(map(lambda x : x.to_dict(), QueryResult))
 df = pd.DataFrame(listQurey)
 df = df.dropna(axis='columns')
-'''
-df = pd.read_csv('./orginal_sales_data_edit.csv')
+
+#df = pd.read_csv('./orginal_sales_data_edit.csv')
 #Đổi kiểu dữ liệu của year sang string
 df["YEAR_ID"] = df["YEAR_ID"].astype("str")
 df["QTR_ID"] = df["QTR_ID"].astype("str")
@@ -81,7 +81,7 @@ app.layout = html.Div(
                     children="XÂY DỰNG DOANH MỤC SẢN PHẨM TIỀM NĂNG", className="header-title-left"
                 ),
                 html.H1(
-                    children="IUH-DHKTPM16A-20116031-VÕ TẤN ĐẠT", className="header-title-right"
+                    children="IUH-DHHHTT16C-20003021-Trần Hoài Duy", className="header-title-right"
                 )
                 ],className="header"
         ),
