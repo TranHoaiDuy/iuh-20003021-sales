@@ -13,6 +13,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 # TẢI DỮ LIỆU TỪ FIRESTORE
+'''
 cred = credentials.Certificate("./iuh-20003021-firebase-adminsdk-zio7s-9302050963.json")
 appLoadData = firebase_admin.initialize_app(cred)
 
@@ -22,7 +23,9 @@ queryResults = list(dbFireStore.collection(u'tbl-20003021').where(u'DEALSIZE', u
 listQueryResult = list(map(lambda x: x.to_dict(), queryResults))
 
 df = pd.DataFrame(listQueryResult)
-
+'''
+df = pd.read_csv('orginal_sales_data_edit.csv')
+df.dropna(inplace=True)
 # TRỰC QUAN HÓA DỮ LIỆU WEB APP
 app = Dash(__name__)
 server = app.server
@@ -155,5 +158,5 @@ app.layout = html.Div(
     ])
 
 if __name__ == '__main__':
-    app.run_server(debug=True, port=8090)
+    app.run_server(debug=True)
             
