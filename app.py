@@ -1,162 +1,146 @@
-# Học thêm tại: https://dash.plotly.com/
-
-# Run this app with `python app.py` and
-
-# visit http://127.0.0.1:8050/ in your web browser.
-
-# BẤM CTRL '+' C ĐỂ TẮT APP ĐANG CHẠY
-
+#import thư viện
 from dash import Dash, html, dcc
 import plotly.express as px
+import matplotlib.pyplot as plt
 import pandas as pd
 import firebase_admin
 from firebase_admin import credentials, firestore
 
 # TẢI DỮ LIỆU TỪ FIRESTORE
 '''
-cred = credentials.Certificate("./iuh-20003021-firebase-adminsdk-zio7s-9302050963.json")
-appLoadData = firebase_admin.initialize_app(cred)
+if not firebase_admin._apps:
+    cred = credentials.Certificate("./iuh-20116031-firebase-adminsdk-f8rup-e272ed7d74.json")
+    app = firebase_admin.initialize_app(cred)
+dbFIrestore = firestore.client()
 
-dbFireStore = firestore.client()
-
-queryResults = list(dbFireStore.collection(u'tbl-20003021').where(u'DEALSIZE', u'==', 'Large').stream())
-listQueryResult = list(map(lambda x: x.to_dict(), queryResults))
-
-df = pd.DataFrame(listQueryResult)
+QueryResult = list(dbFIrestore.collection("tbl-20116031").stream())
+listQurey = list(map(lambda x : x.to_dict(), QueryResult))
+df = pd.DataFrame(listQurey)
+df = df.dropna(axis='columns')
 '''
-df = pd.read_csv('orginal_sales_data_edit.csv')
-df.dropna(inplace=True)
+df = pd.read_csv('./orginal_sales_data_edit.csv')
+#Đổi kiểu dữ liệu của year sang string
+df["YEAR_ID"] = df["YEAR_ID"].astype("str")
+df["QTR_ID"] = df["QTR_ID"].astype("str")
+
 # TRỰC QUAN HÓA DỮ LIỆU WEB APP
 app = Dash(__name__)
+
 server = app.server
 
-app.title = "Xây Dựng Danh Mục Sản Phẩm Tiềm Năng"
+app.title = "Finance Data Analysis"
 
-doanhSo = sum(df['SALES'])
-answerdoanhSo = str(round(doanhSo, 2))
+#Biểu đồ doanh thu theo năm
+bd1_value = df[['YEAR_ID','SALES']].groupby('YEAR_ID').sum()
+listValueLoiNhan = list(bd1_value.to_dict().values())
+year = listValueLoiNhan[0].keys()
+values_loiNhan = listValueLoiNhan[0].values()
+bd1 = pd.DataFrame({'YEAR': year,'DoanhThu': values_loiNhan})
 
-loiNhuan = sum(df['SALES']) - sum(df['QUANTITYORDERED']*df['PRICEEACH'])
-answerLoiNhuan = str(round(loiNhuan, 2))
+figDoanhSoTheoNam = px.bar(bd1, x="YEAR", y="DoanhThu", title="Doanh Thu Theo Năm",
+labels={'YEAR':'Năm',  'DoanhThu':'Doanh thu'})
 
-DoanhSo = df.groupby(['CATEGORY']).sum(numeric_only=True)
-topDoanhSo = DoanhSo['SALES'].max()
-answertopDoanhSo = str(round(topDoanhSo, 2))
-
-df["PROFIT"]=df['SALES']-df["QUANTITYORDERED"]*df["PRICEEACH"]
-ln = df.groupby(['CATEGORY']).sum('PROFIT')
-topLoiNhuan = ln['PROFIT'].max()
-
-answertopLoiNhuan = str(round(topLoiNhuan, 2))
-
-df["YEAR_ID"] = df["YEAR_ID"].astype("str")
-h1 = px.histogram(df, x="YEAR_ID", y="SALES", title='Doanh số bán hàng theo năm',
-labels={'YEAR_ID': 'Năm','SALES':'Doanh Số'})
-
-
-hk3 = df[df['YEAR_ID']=='2003']
-ln3 = sum(hk3['SALES']) - sum(hk3['QUANTITYORDERED']*hk3['PRICEEACH'])
-hk4 = df[df['YEAR_ID']=='2004']
-ln4= sum(hk4['SALES']) - sum(hk4['QUANTITYORDERED']*hk4['PRICEEACH'])
-hk5 = df[df['YEAR_ID']=='2005']
-ln5= sum(hk5['SALES']) - sum(hk5['QUANTITYORDERED']*hk5['PRICEEACH'])
-d = pd.DataFrame({
-    'YEAR_ID':[2003,2004,2005],
-    'PROFIT':[ln3,ln4,ln5]
-})
-d["YEAR_ID"] = d["YEAR_ID"].astype("str")
-h2 = px.line(d, x='YEAR_ID', y='PROFIT', markers=True, labels={'YEAR_ID':'Năm','PROFIT':'Lợi Nhuận'},
-title='Lợi nhuận bán hàng theo năm')
-
-
-h3=px.sunburst(df, path=['YEAR_ID', 'CATEGORY'], values='SALES',
+#Biểu đồ doanh số theo mục và theo năm 
+figTiLeDongGopDanhSoTheoTungDoanhMuc = px.sunburst(df, path=['YEAR_ID', 'CATEGORY'], values='SALES',
 color='SALES',
-labels={'parent':'Năm', 'labels':'Danh Mục','SALES':'Doanh Số'},
-title='Tỉ lệ doanh số theo danh mục trong từng năm')
+labels={'parent':'Năm', 'labels':'Quý','SALES':'Doanh số'},
+title='TỈ LỆ ĐÓNG GÓP CỦA DOANH SỐ THEO DANH MỤC TRONG NĂM')
 
-df["PROFIT"]=df['SALES']-df["QUANTITYORDERED"]*df["PRICEEACH"]
-h4=px.sunburst(df, path=['YEAR_ID', 'CATEGORY'], values='PROFIT',
-color='PROFIT',
-labels={'parent':'Năm', 'labels':'Danh Mục','PROFIT':'Lợi Nhuận'},
-title='Tỉ lệ lợi nhuận theo danh mục trong từng năm')
 
-sp = df.groupby(['CATEGORY']).sum('SALES').sort_values(by="SALES", ascending=False).reset_index().head(1)['CATEGORY'][0]
+
+# Dữ liệu truy vấn 
+tongDoanhSo = df['SALES'].sum().round(2)
+doanhSoCaoNhat = df.groupby(['CATEGORY']).sum(numeric_only=True)['SALES'].max()
+
+#Tinh loi nhuan
+#1 Tính total sale
+df['TOTAL_SALES'] = df['QUANTITYORDERED'] * df['PRICEEACH']
+#2 Tính lợi nhuận
+df['Profit'] = (df['SALES'] - df['TOTAL_SALES']).round(2)
+tongLoiNhuan = df['Profit'].sum().round(2)
+loiNhuanCaoNhat = df.groupby(['CATEGORY']).sum('Profit')['Profit'].max()
+
+#Vẽ biểu đồ 3
+figTiLeDongGopLoiNhanTheoTungDoanhMuc = px.sunburst(df, path=['YEAR_ID', 'CATEGORY'], values='Profit',
+color='Profit',
+labels={'parent':'Năm', 'labels':'Quý','Profit':'Lợi nhuận'},
+title='TỈ LỆ ĐÓNG GÓP CỦA LỢI NHUẬN THEO MỤC TRONG NĂM')
+
+lnvalue = df[['YEAR_ID','Profit']].groupby('YEAR_ID').sum()
+listValueLoiNhan = list(lnvalue.to_dict().values())
+year = listValueLoiNhan[0].keys()
+values_loiNhan = listValueLoiNhan[0].values()
+bd2 = pd.DataFrame({'YEAR': year,'LoiNhuan': values_loiNhan})
+figLoiNhanTheoNam = px.line(bd2, x="YEAR", y="LoiNhuan", title='LỢI NHUẬN BÁN HÀNG THEO NĂM', labels={'YEAR':'Năm',  'LoiNhuan':'Lợi nhuận'})
 
 app.layout = html.Div(
     children=[
         html.Div(
-            children=[
-                html.H3(
-                    "Xây Dựng Danh Mục Sản Phẩm Tiềm Năng", className="header-title"
-                ),html.P('IUH_DHHTTT16C_20003021_Trần Hoài Duy',className='info')
-            ],
-            className="header",
+             children=[
+                html.H1(
+                    children="XÂY DỰNG DOANH MỤC SẢN PHẨM TIỀM NĂNG", className="header-title-left"
+                ),
+                html.H1(
+                    children="IUH-DHKTPM16A-20116031-VÕ TẤN ĐẠT", className="header-title-right"
+                )
+                ],className="header"
         ),
         html.Div(
             children=[
                 html.Div(
-                children=html.Div(
-                    children=[
-                        html.P("DOANH SỐ SALE",className="title"),
-                        html.P(answerdoanhSo)
-                    ],
-                    className="label"
-                    ),className="card c1"
+                    children=[html.H4("DOANH SỐ SALE"),
+                              html.P(tongDoanhSo)
+                    ], className="under__header__item"),
+                html.Div(
+                    children=[html.H4("LỢI NHUẬN"),
+                              html.P(tongLoiNhuan)
+                    ], className="under__header__item"),
+                html.Div(
+                    children=[html.H4("TOP DOANH SỐ"),
+                              html.P(doanhSoCaoNhat)
+                    ], className="under__header__item"),
+                html.Div(
+                    children=[html.H4("TOP LỢI NHUẬN"),
+                              html.P(loiNhuanCaoNhat)
+                    ], className="under__header__item")
+            ]
+        ,className="under__header"),
+        html.Div(
+            children=[
+                html.Div(
+                    children=dcc.Graph(
+                    id='soluong-graph',
+                    figure=figDoanhSoTheoNam),
+                    className="card"
                 ),
                 html.Div(
-                children=html.Div(
-                    children=[
-                        html.P("LỢI NHUẬN",className="title"),
-                        html.P(answerLoiNhuan)
-                    ],
-                    className="label"
-                    ),className="card c1"
-                ),
-                html.Div(
-                children=html.Div(
-                    children=[
-                        html.P("TOP DOANH SỐ",className="title"),
-                        html.P(sp+', '+answertopDoanhSo)
-                    ],
-                    className="label"
-                    ),className="card c1"
-                ),
-                html.Div(
-                children=html.Div(
-                    children=[
-                        html.P("TOP LỢI NHUẬN",className="title"),
-                        html.P(sp+', '+answertopLoiNhuan)
-                    ],
-                    className="label"
-                    ),className="card c1"
-                ),
-                html.Div(
-                children=dcc.Graph(
-                    figure=h1,
-                    className="hist"
-                    ),className="card c2"
-                ),
-                html.Div(
-                children=dcc.Graph(
-                    figure=h3,
-                    className="hist"
-                    ),className="card c2"
-                ),
-                html.Div(
-                children=dcc.Graph(
-                    figure=h2,
-                    className="hist"
-                    ),className="card c2"
-                ),
-                html.Div(
-                children=dcc.Graph(
-                    figure=h4,
-                    className="hist"
-                    ),className="card c2"
+                    children=dcc.Graph(
+                    id='doanhso-graph',
+                    figure=figTiLeDongGopDanhSoTheoTungDoanhMuc),
+                    className="card"
                 )
-            ],className="wrapper"
-        )
+            ], className="wrapper"),
+        html.Div(
+            children=[
+                html.Div(
+                    children=dcc.Graph(
+                    id='luongdon-graph',
+                    figure=figLoiNhanTheoNam),
+                    className="card"
+                ),
+                html.Div(
+                    children=dcc.Graph(
+                    id='hihi-graph',
+                    figure=figTiLeDongGopLoiNhanTheoTungDoanhMuc),
+                    className="card"
+                )
+            ], className="wrapper")
     ])
+
+'''
+if __name__ == '__main__':
+    app.run_server(debug=True, port=8090)
+'''
 
 if __name__ == '__main__':
     app.run_server(debug=True)
-            
